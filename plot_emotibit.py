@@ -92,4 +92,4 @@ for ch, title in channels.items():
     plt.savefig(f"{ch}_comparison.png", dpi=300)
     plt.show()
 
-print("\n✅ Done! Plots saved as PI_comparison.png, PG_comparison.png, PR_comparison.png")
+print("\n Done! Plots saved as PI_comparison.png, PG_comparison.png, PR_comparison.png")
