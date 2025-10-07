@@ -44,7 +44,7 @@ for ch, title in channels.items():
         df = pd.read_csv(path)
 
         if "LocalTimestamp" not in df.columns or ch not in df.columns:
-            print(f"⚠️ Missing columns in {path}")
+            print(f"Missing columns in {path}")
             continue
 
         ts = df["LocalTimestamp"].astype(float).values
@@ -55,7 +55,7 @@ for ch, title in channels.items():
         ts, sig = ts[mask], sig[mask]
 
         if sig.size == 0:
-            print(f"⚠️ {name}-{ch}: No samples after trimming")
+            print(f"{name}-{ch}: No samples after trimming")
             continue
 
         # Filter + detrend + normalize
