@@ -1,0 +1,4 @@
+# Ignore Python virtual environment only
+venv/
+__pycache__/
+.DS_Store
