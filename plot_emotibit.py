@@ -3,20 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, filtfilt, detrend
 
-# --- Bandpass filter ---
 def bandpass_filter(signal, fs=100, low=0.5, high=5, order=3):
     nyquist = 0.5 * fs
     b, a = butter(order, [low/nyquist, high/nyquist], btype='band')
     return filtfilt(b, a, signal)
 
-# --- SNR calculation ---
 def compute_snr(sig):
     power_signal = np.mean(sig**2)
-    noise = sig - np.convolve(sig, np.ones(5)/5, mode='same')  # moving average baseline
+    noise = sig - np.convolve(sig, np.ones(5)/5, mode='same') 
     power_noise = np.mean(noise**2)
     return 10 * np.log10(power_signal / power_noise) if power_noise > 0 else -np.inf
 
-# --- File paths ---
 files = {
     "Finger": "Finger-099/first_{}.csv",
     "Wrist": "Wrist-258/first_{}.csv",
@@ -30,7 +27,7 @@ channels = {
 }
 
 FS = 100
-skip_sec = 2  # skip first 2 sec
+skip_sec = 2 
 
 for ch, title in channels.items():
     signals = {}
