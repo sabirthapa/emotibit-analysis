@@ -1,8 +1,0 @@
-{
-  "WifiCredentials": [
-    {
-      "ssid": "esc-router-2g",
-      "password": "12345678"
-    }
-  ]
-}
