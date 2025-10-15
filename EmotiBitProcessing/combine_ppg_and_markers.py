@@ -4,7 +4,7 @@ from pathlib import Path
 # setup paths
 script_dir = Path(__file__).resolve().parent
 base_dir = script_dir.parent / "leftFingerData"
-output_dir = script_dir.parent / "output"
+output_dir = script_dir / "output"
 output_dir.mkdir(exist_ok=True)
 
 # load PPG CSVs
