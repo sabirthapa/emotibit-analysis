@@ -1,1 +1,214 @@
-[{"info":{"name":"EmotiBitData","type":"Multimodal","source_id":"EmotiBit FeatherWing","hardware_version":"V06a","sku":"EM","device_id":"EM-V6-0000099","feather_version":"Adafruit Feather HUZZAH32","feather_wifi_mac_addr":"98:41:d7:bd:9e:7c","firmware_version":"1.14.0","firmware_variant":"EmotiBit_stock_firmware","created_at":"2025-10-02_16-33-39-199329"}},{"info":{"name":"Accelerometer","type":"Accelerometer","typeTags":["AX","AY","AZ"],"channel_count":3,"nominal_srate":25,"channel_format":"float","units":"g","setup":{"range":8,"acc_bwp":2,"acc_us":2}}},{"info":{"name":"Gyroscope","type":"Gyroscope","typeTags":["GX","GY","GZ"],"channel_count":3,"nominal_srate":25,"channel_format":"float","units":"degrees/second","setup":{"range":1000,"gyr_bwp":2,"gyr_us":2}}},{"info":{"name":"Magnetometer","type":"Magnetometer","typeTags":["MX","MY","MZ"],"channel_count":3,"nominal_srate":25,"channel_format":"float","units":"microhenries","setup":{}}},{"info":{"name":"ElectrodermalActivity","type":"ElectrodermalActivity","typeTags":["EA"],"channel_count":1,"nominal_srate":15,"channel_format":"float","units":"microsiemens","setup":{"eda_series_resistance":0,"adc_bits":16,"enable_digital_filter":false,"samples_averaged":5,"oversampling_rate":75,"eda_transform_slope":720.0457,"eda_transform_intercept":1.409683e7}}},{"info":{"name":"SkinConductanceResponseAmplitude","type":"ElectrodermalActivity","typeTags":["SA"],"channel_count":1,"channel_format":"float","units":"microsiemens"}},{"info":{"name":"SkinConductanceResponseFrequency","type":"ElectrodermalActivity","typeTags":["SF"],"channel_count":1,"nominal_srate":3,"channel_format":"float","units":"count/min"}},{"info":{"name":"SkinConductanceResponseRiseTime","type":"ElectrodermalActivity","typeTags":["SR"],"channel_count":1,"channel_format":"float","units":"secs"}},{"info":{"name":"Temperature1","type":"Temperature","typeTags":["T1"],"channel_count":1,"nominal_srate":7.5,"channel_format":"float","units":"degrees celcius","sensor_part_number":"MAX30101","setup":{"samples_averaged":1,"oversampling_rate":7.5}}},{"info":{"name":"Thermopile","type":"Temperature","typeTags":["TH"],"channel_count":1,"nominal_srate":7.5,"channel_format":"float","units":"degrees celcius","setup":{"samples_averaged":1,"oversampling_rate":7.5}}},{"info":{"name":"PPG","type":"PPG","typeTags":["PI","PR","PG"],"channel_count":3,"nominal_srate":25,"channel_format":"float","units":"raw units","setup":{"LED_power_level":47,"samples_averaged":16,"LED_mode":3,"oversampling_rate":400,"pulse_width":215,"ADC_range":4096}}},{"info":{"name":"HeartRate","type":"PPG","typeTags":["HR"],"channel_count":1,"channel_format":"int","units":"bpm"}},{"info":{"name":"InterBeatInterval","type":"PPG","typeTags":["BI"],"channel_count":1,"channel_format":"float","units":"mS"}}]
+[
+    {
+        "info": {
+            "created_at": "2025-10-02_16-33-39-199329",
+            "device_id": "EM-V6-0000099",
+            "feather_version": "Adafruit Feather HUZZAH32",
+            "feather_wifi_mac_addr": "98:41:d7:bd:9e:7c",
+            "firmware_variant": "EmotiBit_stock_firmware",
+            "firmware_version": "1.14.0",
+            "hardware_version": "V06a",
+            "name": "EmotiBitData",
+            "sku": "EM",
+            "source_id": "EmotiBit FeatherWing",
+            "type": "Multimodal"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 3,
+            "channel_format": "float",
+            "name": "Accelerometer",
+            "nominal_srate": 25,
+            "setup": {
+                "acc_bwp": 2,
+                "acc_us": 2,
+                "range": 8
+            },
+            "type": "Accelerometer",
+            "typeTags": [
+                "AX",
+                "AY",
+                "AZ"
+            ],
+            "units": "g"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 3,
+            "channel_format": "float",
+            "name": "Gyroscope",
+            "nominal_srate": 25,
+            "setup": {
+                "gyr_bwp": 2,
+                "gyr_us": 2,
+                "range": 1000
+            },
+            "type": "Gyroscope",
+            "typeTags": [
+                "GX",
+                "GY",
+                "GZ"
+            ],
+            "units": "degrees/second"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 3,
+            "channel_format": "float",
+            "name": "Magnetometer",
+            "nominal_srate": 25,
+            "setup": {},
+            "type": "Magnetometer",
+            "typeTags": [
+                "MX",
+                "MY",
+                "MZ"
+            ],
+            "units": "microhenries"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "ElectrodermalActivity",
+            "nominal_srate": 15,
+            "setup": {
+                "adc_bits": 16,
+                "eda_series_resistance": 0,
+                "eda_transform_intercept": 1.409683e7,
+                "eda_transform_slope": 720.0457,
+                "enable_digital_filter": false,
+                "oversampling_rate": 75,
+                "samples_averaged": 5
+            },
+            "type": "ElectrodermalActivity",
+            "typeTags": [
+                "EA"
+            ],
+            "units": "microsiemens"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "SkinConductanceResponseAmplitude",
+            "type": "ElectrodermalActivity",
+            "typeTags": [
+                "SA"
+            ],
+            "units": "microsiemens"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "SkinConductanceResponseFrequency",
+            "nominal_srate": 3,
+            "type": "ElectrodermalActivity",
+            "typeTags": [
+                "SF"
+            ],
+            "units": "count/min"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "SkinConductanceResponseRiseTime",
+            "type": "ElectrodermalActivity",
+            "typeTags": [
+                "SR"
+            ],
+            "units": "secs"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "Temperature1",
+            "nominal_srate": 7.5,
+            "sensor_part_number": "MAX30101",
+            "setup": {
+                "oversampling_rate": 7.5,
+                "samples_averaged": 1
+            },
+            "type": "Temperature",
+            "typeTags": [
+                "T1"
+            ],
+            "units": "degrees celcius"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "Thermopile",
+            "nominal_srate": 7.5,
+            "setup": {
+                "oversampling_rate": 7.5,
+                "samples_averaged": 1
+            },
+            "type": "Temperature",
+            "typeTags": [
+                "TH"
+            ],
+            "units": "degrees celcius"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 3,
+            "channel_format": "float",
+            "name": "PPG",
+            "nominal_srate": 25,
+            "setup": {
+                "ADC_range": 4096,
+                "LED_mode": 3,
+                "LED_power_level": 47,
+                "oversampling_rate": 400,
+                "pulse_width": 215,
+                "samples_averaged": 16
+            },
+            "type": "PPG",
+            "typeTags": [
+                "PI",
+                "PR",
+                "PG"
+            ],
+            "units": "raw units"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "int",
+            "name": "HeartRate",
+            "type": "PPG",
+            "typeTags": [
+                "HR"
+            ],
+            "units": "bpm"
+        }
+    },
+    {
+        "info": {
+            "channel_count": 1,
+            "channel_format": "float",
+            "name": "InterBeatInterval",
+            "type": "PPG",
+            "typeTags": [
+                "BI"
+            ],
+            "units": "mS"
+        }
+    }
+]
