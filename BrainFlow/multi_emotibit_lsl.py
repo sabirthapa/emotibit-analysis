@@ -47,17 +47,18 @@ def stream_emotibit(serial, name_suffix):
         while not stop_flag:
             aux_data = board.get_board_data(preset=BrainFlowPresets.AUXILIARY_PRESET)
             anc_data = board.get_board_data(preset=BrainFlowPresets.ANCILLARY_PRESET)
-
-            # push latest PPG sample (3 channels)
+            
+            # push PPGs
             if aux_data.shape[1] > 0:
-                ppg_outlet.push_sample(aux_data[1:4, -1].tolist())
+                ppg_outlet.push_chunk(aux_data[1:4, :].T.tolist())
 
-            # push latest EDA + Temp
+
+            # push EDA + Temp
             if anc_data.shape[1] > 0:
-                eda_outlet.push_sample([anc_data[1, -1]])
-                temp_outlet.push_sample([anc_data[2, -1]])
+                eda_outlet.push_chunk(anc_data[1:2, :].T.tolist())
+                temp_outlet.push_chunk(anc_data[2:3, :].T.tolist())
 
-            time.sleep(0.01)
+            time.sleep(0.001)
 
     except Exception as e:
         print(f"Error with {serial}: {e}")
@@ -77,9 +78,9 @@ if __name__ == "__main__":
 
     # device serials
     serials = [
-        "EM-V6-0000099",
+        # "EM-V6-0000099",
         "EM-V6-0000228",
-        "EM-V6-0000335",
+        # "EM-V6-0000335",
     ]
 
     threads = []
