@@ -79,6 +79,7 @@ if __name__ == "__main__":
     serials = [
         "EM-V6-0000099",
         "EM-V6-0000228",
+        "EM-V6-0000335",
     ]
 
     threads = []
