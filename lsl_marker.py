@@ -1,18 +1,19 @@
 from pylsl import StreamInfo, StreamOutlet
 import time
 
-# Create LSL stream info (same name & sourceId used in Oscilloscope JSON)
-info = StreamInfo('DataSyncMarker', 'Markers', 1, 0, 'string', '12345')
+# create a marker stream 
+info = StreamInfo("MarkerStream", "Markers", 1, 0, "string", "marker_stream_id")
 outlet = StreamOutlet(info)
+print("✅ Marker stream ready. Press keys to send markers:")
 
-print("LSL marker stream ready.")
-print("Type 'baseline', 'meditation', 'recovery', or 'exit' to send markers.\n")
-
-while True:
-    marker = input("Enter marker: ").strip().lower()
-    if marker == "exit":
-        print("Exiting marker sender.")
-        break
-    elif marker:
+# send markers manually
+try:
+    while True:
+        marker = input("Enter marker (or 'q' to quit): ")
+        if marker.lower() == "q":
+            break
         outlet.push_sample([marker])
-        print(f"Marker sent: {marker} at {time.strftime('%H:%M:%S')}")
+        print(f"📍 Sent marker: {marker}")
+
+except KeyboardInterrupt:
+    print("Stopped marker stream.")

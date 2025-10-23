@@ -16,24 +16,37 @@ os.makedirs(output_dir, exist_ok=True)
 # convert each stream to CSV
 for i, stream in enumerate(streams):
     name = stream["info"]["name"][0]
+    source_id = stream["info"].get("source_id", ["unknown"])[0]
+    serial = source_id.split("_")[-1] 
+    stype = stream["info"]["type"][0]
     data = stream["time_series"]
     timestamps = stream["time_stamps"]
 
-    # Build dataframe
-    cols = []
-    if "PPG" in name:
-        cols = ["PPG_1", "PPG_2", "PPG_3"]
-    elif "EDA" in name:
-        cols = ["EDA"]
-    elif "TEMP" in name:
-        cols = ["Temperature"]
+    print(f"Processing stream {i+1}: {name} ({stype}) with {len(timestamps)} samples")
+
+    # marker streams (contain strings)
+    if stype.lower() == "markers" or isinstance(data[0][0], str):
+        df = pd.DataFrame({"Marker": [d[0] for d in data], "Timestamp": timestamps})
     else:
-        cols = [f"Ch_{j}" for j in range(data.shape[1])]
-    df = pd.DataFrame(data, columns=cols)
-    df["Timestamp"] = timestamps
+        # numeric data streams
+        import numpy as np
+
+        data = np.array(data)
+
+        if "PPG" in name:
+            cols = ["PPG_1", "PPG_2", "PPG_3"]
+        elif "EDA" in name:
+            cols = ["EDA"]
+        elif "TEMP" in name:
+            cols = ["Temperature"]
+        else:
+            cols = [f"Ch_{j}" for j in range(data.shape[1])]
+
+        df = pd.DataFrame(data, columns=cols)
+        df["Timestamp"] = timestamps
 
     # save as CSV
-    out_path = os.path.join(output_dir, f"{name}.csv")
+    out_path = os.path.join(output_dir, f"{name}_{serial}.csv")
     df.to_csv(out_path, index=False)
     print(f"Saved: {out_path}")
 
