@@ -43,20 +43,37 @@ def stream_emotibit(serial, name_suffix):
 
         print(f"{serial} → LSL outlets ready ({name_suffix})")
 
+        # track empty polls
+        empty_read_count = 0
+        
         # main streaming loop
         while not stop_flag:
             aux_data = board.get_board_data(preset=BrainFlowPresets.AUXILIARY_PRESET)
             anc_data = board.get_board_data(preset=BrainFlowPresets.ANCILLARY_PRESET)
-            
-            # push PPGs
-            if aux_data.shape[1] > 0:
-                ppg_outlet.push_chunk(aux_data[1:4, :].T.tolist())
 
+
+            # if no data from EmotiBit
+            if aux_data.shape[1] == 0 and anc_data.shape[1] == 0:
+                empty_read_count += 1
+                 # if no data for ~5 seconds (0.001s * 5000 loops)
+                if empty_read_count > 5000:
+                    print(f" No data from {serial} for 5 seconds — disconnecting this EmotiBit.")
+                    break
+                time.sleep(0.001)
+                continue
+            else:
+                empty_read_count = 0
+            
+            # push PPG
+            if aux_data.shape[1] > 0:
+                for i in range(aux_data.shape[1]):
+                    ppg_outlet.push_sample(aux_data[1:4, i].tolist())
 
             # push EDA + Temp
             if anc_data.shape[1] > 0:
-                eda_outlet.push_chunk(anc_data[1:2, :].T.tolist())
-                temp_outlet.push_chunk(anc_data[2:3, :].T.tolist())
+                for i in range(anc_data.shape[1]):
+                    eda_outlet.push_sample([anc_data[1, i]])
+                    temp_outlet.push_sample([anc_data[2, i]])
 
             time.sleep(0.001)
 
@@ -80,7 +97,10 @@ if __name__ == "__main__":
     serials = [
         # "EM-V6-0000099",
         "EM-V6-0000228",
-        # "EM-V6-0000335",
+        # "EM-V6-0000258",
+        "EM-V6-0000335",
+        # "EM-V6-0000071",
+        "EM-V6-0000313"
     ]
 
     threads = []
