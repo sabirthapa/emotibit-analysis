@@ -1,6 +1,7 @@
 import os, math, argparse
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -164,17 +165,30 @@ def plot_hr_trend(serial, hr_df, segs, outdir):
     plt.tight_layout(); plt.savefig(path,dpi=150); plt.close()
     return path
 
-def make_pdf(serial, hr_avgs, class_avgs, temp_mean, eda_mean, fs, plot_path, outdir):
+def make_pdf(serial, hr_avgs, class_avgs, temp_mean, eda_mean, fs, plot_path, outdir, user_name, user_email):
     pdf_path = os.path.join(outdir, f"report_{serial}.pdf")
     c = canvas.Canvas(pdf_path, pagesize=letter)
     w, h = letter
 
     y = h - 1.0*inch
-    c.setFont("Helvetica-Bold",16)
-    c.drawString(1.0*inch, y, f"Meditation Report — {serial}")
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(1.0*inch, y, "Meditation Report")
     y -= 0.3*inch
-    c.setFont("Helvetica",11)
-    c.drawString(1.0*inch, y, f"Heart rate measured during your meditation session.")
+
+    # Participant info
+    c.setFont("Helvetica", 11)
+    c.drawString(1.0*inch, y, f"Participant: {user_name}")
+    y -= 0.2*inch
+    c.drawString(1.0*inch, y, f"Email: {user_email}")
+    y -= 0.2*inch
+    c.drawString(1.0*inch, y, f"Device ID: {serial}")
+    y -= 0.2*inch
+    c.drawString(1.0*inch, y, f"Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    y -= 0.4*inch
+
+    # Context / Study details
+    c.setFont("Helvetica", 11)
+    c.drawString(1.0*inch, y, "Heart rate measured during your meditation session.")
     y -= 0.25*inch
     c.drawString(1.0*inch, y, f"Sampling rate: {fs:.2f} Hz")
     y -= 0.4*inch
@@ -217,8 +231,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--xdf", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--map", default="participants.csv",
+                    help="CSV file mapping serial numbers to participant info (name,email)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
+
+    # ---- Load participant mapping ----
+    if os.path.exists(args.map):
+        mapping_df = pd.read_csv(args.map)
+        name_lookup = dict(zip(mapping_df.serial, mapping_df.name))
+        email_lookup = dict(zip(mapping_df.serial, mapping_df.email))
+    else:
+        print(f"⚠️ Warning: mapping file '{args.map}' not found — using generic names.")
+        name_lookup, email_lookup = {}, {}
 
     grouped, marker_streams = load_streams_grouped_by_serial(args.xdf)
     segs = parse_marker_segments(marker_streams)
@@ -246,8 +271,11 @@ def main():
     # generate reports
     for serial, r in indiv.items():
         plot_path = plot_hr_trend(serial, r["hr_df"], segs, args.out)
+
+        user_name = name_lookup.get(serial, "")
+        user_email = email_lookup.get(serial, "")
         make_pdf(serial, r["hr_avgs"], class_avgs, r["temp_mean"], r["eda_mean"],
-                 r["fs"], plot_path, args.out)
+                 r["fs"], plot_path, args.out, user_name, user_email)
         print(f"✅ Saved report for {serial}")
 
     print("\n🎉 All reports generated successfully.")
