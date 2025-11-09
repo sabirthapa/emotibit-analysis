@@ -2,6 +2,7 @@ import os, math, argparse
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
+from reportlab.lib import colors
 
 import numpy as np
 import pandas as pd
@@ -15,6 +16,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 
 # Helpers / Data Structures 
+UB_BLUE = colors.HexColor("#005BBB")
 
 @dataclass
 class ParticipantStreams:
@@ -146,82 +148,150 @@ def summarize_segment(hr_df, seg):
 # Plot and PDF generation
 
 def plot_hr_trend(serial, hr_df, segs, outdir):
-    if hr_df.empty: return None
-    plt.figure(figsize=(7.5,4))
-    plt.plot(hr_df["t"]-hr_df["t"].iloc[0], hr_df["HR"], color="#2a9d8f", lw=1.5)
-    plt.grid(True, alpha=0.3, linestyle='--')
+    if hr_df.empty:
+        return None
+
+    plt.figure(figsize=(7.0, 3.2))  
+    plt.plot(hr_df["t"] - hr_df["t"].iloc[0], hr_df["HR"], color="#2a9d8f", lw=1.5)
+    plt.grid(True, alpha=0.3, linestyle="--")
     plt.xlabel("Time (seconds)")
     plt.ylabel("Heart Rate (bpm)")
-    plt.title(f"Heart Rate Trend — {serial}")
-    
-    plt.ylim(40, 120)  # or dynamically: plt.ylim(hr_df["HR"].quantile(0.01), hr_df["HR"].quantile(0.99))
-    
-    for label,(a,b) in {"Before":segs.before, "During":segs.during, "After":segs.after}.items():
+
+    # UB blue dashed lines for clarity
+    UB_BLUE = "#005BBB"
+    for label, (a, b) in {"Before": segs.before, "During": segs.during, "After": segs.after}.items():
         if a and b:
-            plt.axvline(a-hr_df["t"].iloc[0], ls="--", alpha=0.5)
-            plt.text(a-hr_df["t"].iloc[0]+2, plt.ylim()[1]*0.95, label, fontsize=9, alpha=0.7)
-    os.makedirs(os.path.join(outdir,"plots"), exist_ok=True)
-    path = os.path.join(outdir,"plots",f"{serial}_hr.png")
-    plt.tight_layout(); plt.savefig(path,dpi=150); plt.close()
-    return path
+            plt.axvline(a - hr_df["t"].iloc[0], ls="--", color=UB_BLUE, alpha=0.6)
+            plt.text(
+                a - hr_df["t"].iloc[0] + 3,
+                plt.ylim()[1] * 0.93,
+                label,
+                fontsize=9,
+                color=UB_BLUE,
+                alpha=0.8,
+            )
+
+    plt.title(f"Heart Rate Trend — {serial}", fontsize=11, pad=2)  # minimal padding above title
+    plt.ylim(40, 120)
+    plt.tight_layout(pad=0.2)
+    os.makedirs(os.path.join(outdir, "plots"), exist_ok=True)
+    path = os.path.join(outdir, "plots", f"{serial}_hr.png")
+
+    plt.savefig(path, dpi=250, bbox_inches="tight", pad_inches=0.01)
+    plt.close()
+    return path  
 
 def make_pdf(serial, hr_avgs, class_avgs, temp_mean, eda_mean, fs, plot_path, outdir, user_name, user_email):
     pdf_path = os.path.join(outdir, f"report_{serial}.pdf")
     c = canvas.Canvas(pdf_path, pagesize=letter)
     w, h = letter
 
-    y = h - 1.0*inch
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(1.0*inch, y, "Meditation Report")
-    y -= 0.3*inch
+    # UB logo
+    logo_path = os.path.join(os.path.dirname(__file__), "ub_logo.png")
+    if os.path.exists(logo_path):
+        from PIL import Image
+        logo_img = Image.open(logo_path)
+        aspect_ratio = logo_img.height / logo_img.width
+        logo_width = 2.0 * inch
+        logo_height = logo_width * aspect_ratio
+        c.drawImage(
+            logo_path,
+            (w - logo_width) / 2,
+            h - (1.0 * inch + logo_height / 2),
+            width=logo_width,
+            height=logo_height,
+            mask="auto"
+        )
 
-    # Participant info
+    left_col = 1.2 * inch
+    right_col = 2.9 * inch
+
+    # title
+    y = h - 1.6 * inch
+    c.setFont("Helvetica-Bold", 14)
+    c.setFillColor(UB_BLUE)
+    c.drawString(left_col, y, "Meditation Report")
+    y -= 0.4 * inch
+
+    # participant info
+    left_col = 1.2 * inch
+    right_col = 2.9 * inch
+    info = [
+        ("Participant:", user_name or "—"),
+        ("Email:", user_email or "—"),
+        ("Device ID:", serial),
+        ("Report Generated:", datetime.now().strftime("%Y-%m-%d %H:%M")),
+    ]
+
+    for label, value in info:
+        c.setFont("Helvetica-Bold", 11)
+        c.setFillColor(UB_BLUE)
+        c.drawString(left_col, y, label)
+        c.setFont("Helvetica", 11)
+        c.setFillColor(colors.black)
+        c.drawString(right_col, y, value)
+        y -= 0.25 * inch
+
+    # divider
+    y -= 0.05 * inch
+    c.setStrokeColor(colors.lightgrey)
+    c.line(left_col, y, w - left_col, y)
+    y -= 0.4 * inch
+
+    # study desc
     c.setFont("Helvetica", 11)
-    c.drawString(1.0*inch, y, f"Participant: {user_name}")
-    y -= 0.2*inch
-    c.drawString(1.0*inch, y, f"Email: {user_email}")
-    y -= 0.2*inch
-    c.drawString(1.0*inch, y, f"Device ID: {serial}")
-    y -= 0.2*inch
-    c.drawString(1.0*inch, y, f"Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-    y -= 0.4*inch
+    c.setFillColor(colors.black)
+    c.drawString(left_col, y, "Heart rate measured during your meditation session.")
+    y -= 0.25 * inch
+    c.drawString(left_col, y, f"Sampling rate: {fs:.2f} Hz")
+    y -= 0.45 * inch
 
-    # Context / Study details
-    c.setFont("Helvetica", 11)
-    c.drawString(1.0*inch, y, "Heart rate measured during your meditation session.")
-    y -= 0.25*inch
-    c.drawString(1.0*inch, y, f"Sampling rate: {fs:.2f} Hz")
-    y -= 0.4*inch
-
+    # heart rate plot
     if plot_path and os.path.exists(plot_path):
-        c.drawImage(plot_path, 1.0*inch, y-3.0*inch, width=5.5*inch, height=3.0*inch)
-        y -= 3.3*inch
+        c.drawImage(plot_path, left_col, y - 2.8 * inch, width=5.7 * inch, height=2.8 * inch)
+        y -= 3.0 * inch
 
-    c.setFont("Helvetica-Bold",12)
-    c.drawString(1.0*inch, y, "Your Average Heart Rates")
-    y -= 0.2*inch; c.setFont("Helvetica",11)
-    for k in ["Before","During","After"]:
-        c.drawString(1.0*inch, y, f"{k:8s} — You: {hr_avgs[k]:5.1f} bpm   Class Avg: {class_avgs[k]:5.1f} bpm")
-        y -= 0.2*inch
-    y -= 0.3*inch
+    # heart rates
+    y -= 0.25 * inch
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(UB_BLUE)
+    c.drawString(left_col, y, "Your Average Heart Rates")
+    y -= 0.25 * inch
+    c.setFont("Helvetica", 11)
+    c.setFillColor(colors.black)
+    for k in ["Before", "During", "After"]:
+        c.drawString(left_col, y, f"{k:8s} — You: {hr_avgs[k]:5.1f} bpm   Class Avg: {class_avgs[k]:5.1f} bpm")
+        y -= 0.25 * inch
+    y -= 0.35 * inch
 
+    # interpretation
     delta = hr_avgs["After"] - hr_avgs["Before"]
-    c.setFont("Helvetica-Bold",12)
-    c.drawString(1.0*inch, y, "Interpretation")
-    y -= 0.2*inch; c.setFont("Helvetica",11)
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(UB_BLUE)
+    c.drawString(left_col, y, "Interpretation")
+    y -= 0.25 * inch
+    c.setFont("Helvetica", 11)
+    c.setFillColor(colors.black)
     if delta < 0:
-        c.drawString(1.0*inch, y, f"Your heart rate decreased by {abs(delta):.1f} bpm.")
+        c.drawString(left_col, y, f"Your heart rate decreased by {abs(delta):.1f} bpm.")
     else:
-        c.drawString(1.0*inch, y, f"Your heart rate increased by {delta:.1f} bpm.")
-    y -= 0.4*inch
+        c.drawString(left_col, y, f"Your heart rate increased by {delta:.1f} bpm.")
+    y -= 0.5 * inch
 
-    c.setFont("Helvetica-Bold",12)
-    c.drawString(1.0*inch, y, "Other Signals")
-    y -= 0.2*inch; c.setFont("Helvetica",11)
-    c.drawString(1.0*inch, y, f"Average Skin Temperature: {temp_mean:.2f} °C")
+    # other signals
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(UB_BLUE)
+    c.drawString(left_col, y, "Other Signals")
+    y -= 0.25 * inch
+    c.setFont("Helvetica", 11)
+    c.setFillColor(colors.black)
+    c.drawString(left_col, y, f"Average Skin Temperature: {temp_mean:.2f} °C")
 
-    c.setFont("Helvetica-Oblique",9)
-    c.drawString(1.0*inch, 0.8*inch, "Note: Lower heart rates after meditation usually indicate greater relaxation.")
+    # footer
+    c.setFont("Helvetica-Oblique", 9)
+    c.setFillColor(colors.grey)
+    c.drawString(left_col, 0.55 * inch, "Note: Lower heart rates after meditation usually indicate greater relaxation.")
+
     c.save()
     return pdf_path
 
@@ -236,7 +306,7 @@ def main():
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    # ---- Load participant mapping ----
+    # load participant mapping 
     if os.path.exists(args.map):
         mapping_df = pd.read_csv(args.map)
         name_lookup = dict(zip(mapping_df.serial, mapping_df.name))
