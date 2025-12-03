@@ -258,7 +258,7 @@ def make_pdf(serial, hr_avgs, class_avgs, temp_mean, eda_mean, fs, plot_path, ou
     y -= 0.25 * inch
     c.setFont("Helvetica", 11); c.setFillColor(colors.black)
     for k in ["Before", "After"]:
-        c.drawString(left_col, y, f"{k:8s} — You: {hr_avgs[k]:5.1f} bpm   Class Avg: {class_avgs[k]:5.1f} bpm")
+        c.drawString(left_col, y, f"{k:8s} — Your Avg: {hr_avgs[k]:5.1f} bpm   Group Avg: {class_avgs[k]:5.1f} bpm")
         y -= 0.25 * inch
     y -= 0.35 * inch
 
