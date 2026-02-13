@@ -1,0 +1,15 @@
+status,fs_est,duration_s,peaks,valid_beats,mean_hr,sd_hr,valid_seconds,total_seconds,emotibit,segment,ppg_csv
+ok,99.496,137.764,157,155,67.97190145736761,8.020813298143533,137,138,EmotiBit_1,baseline_warmup,analysis_outputs/segmented/EmotiBit_1/baseline_warmup/PPG.csv
+ok,99.496,934.57,1057,1041,70.01758644150182,17.12179040949529,933,935,EmotiBit_1,meditation_all,analysis_outputs/segmented/EmotiBit_1/meditation_all/PPG.csv
+ok,100.021,137.761,173,168,77.05894194796291,23.63604488057495,136,138,EmotiBit_2,baseline_warmup,analysis_outputs/segmented/EmotiBit_2/baseline_warmup/PPG.csv
+ok,100.021,934.565,1029,1028,66.23581405475913,4.795424380462053,932,935,EmotiBit_2,meditation_all,analysis_outputs/segmented/EmotiBit_2/meditation_all/PPG.csv
+ok,98.92,137.768,171,168,76.41676761326652,20.492630712608918,135,138,EmotiBit_3,baseline_warmup,analysis_outputs/segmented/EmotiBit_3/baseline_warmup/PPG.csv
+ok,98.92,934.562,1064,1059,68.84453727307348,8.889574426263891,932,935,EmotiBit_3,meditation_all,analysis_outputs/segmented/EmotiBit_3/meditation_all/PPG.csv
+ok,99.07,137.771,160,159,69.83219812532867,5.659890669392828,136,138,EmotiBit_4,baseline_warmup,analysis_outputs/segmented/EmotiBit_4/baseline_warmup/PPG.csv
+ok,99.07,934.561,1058,1057,68.2941247723672,12.195914962224322,933,935,EmotiBit_4,meditation_all,analysis_outputs/segmented/EmotiBit_4/meditation_all/PPG.csv
+ok,99.012,137.771,198,193,86.87732490277433,17.978313851778854,136,138,EmotiBit_5,baseline_warmup,analysis_outputs/segmented/EmotiBit_5/baseline_warmup/PPG.csv
+ok,99.012,934.565,1216,1206,78.97105196532745,12.629902290930353,933,935,EmotiBit_5,meditation_all,analysis_outputs/segmented/EmotiBit_5/meditation_all/PPG.csv
+ok,99.118,137.765,169,168,74.22176741261957,8.513698602895554,136,138,EmotiBit_6,baseline_warmup,analysis_outputs/segmented/EmotiBit_6/baseline_warmup/PPG.csv
+ok,99.118,934.561,1059,1054,68.31134382634741,8.870772977899597,932,935,EmotiBit_6,meditation_all,analysis_outputs/segmented/EmotiBit_6/meditation_all/PPG.csv
+ok,99.972,137.768,148,147,64.60660602496618,6.258835906164866,136,138,EmotiBit_7,baseline_warmup,analysis_outputs/segmented/EmotiBit_7/baseline_warmup/PPG.csv
+ok,99.972,934.569,958,957,61.5684703017726,4.988095452864186,934,935,EmotiBit_7,meditation_all,analysis_outputs/segmented/EmotiBit_7/meditation_all/PPG.csv

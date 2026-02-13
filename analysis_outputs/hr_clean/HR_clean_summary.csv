@@ -1,0 +1,15 @@
+emotibit,segment,valid_pct,out
+EmotiBit_1,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_1/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_2,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_2/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_3,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_3/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_4,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_4/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_5,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_5/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_6,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_6/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_7,baseline_warmup,100.0,analysis_outputs/hr_clean/EmotiBit_7/baseline_warmup/HR_1Hz_clean.csv
+EmotiBit_1,meditation_all,99.57,analysis_outputs/hr_clean/EmotiBit_1/meditation_all/HR_1Hz_clean.csv
+EmotiBit_2,meditation_all,100.0,analysis_outputs/hr_clean/EmotiBit_2/meditation_all/HR_1Hz_clean.csv
+EmotiBit_3,meditation_all,100.0,analysis_outputs/hr_clean/EmotiBit_3/meditation_all/HR_1Hz_clean.csv
+EmotiBit_4,meditation_all,100.0,analysis_outputs/hr_clean/EmotiBit_4/meditation_all/HR_1Hz_clean.csv
+EmotiBit_5,meditation_all,99.79,analysis_outputs/hr_clean/EmotiBit_5/meditation_all/HR_1Hz_clean.csv
+EmotiBit_6,meditation_all,100.0,analysis_outputs/hr_clean/EmotiBit_6/meditation_all/HR_1Hz_clean.csv
+EmotiBit_7,meditation_all,100.0,analysis_outputs/hr_clean/EmotiBit_7/meditation_all/HR_1Hz_clean.csv

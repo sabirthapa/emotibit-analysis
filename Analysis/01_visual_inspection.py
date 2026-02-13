@@ -1,7 +1,7 @@
 import argparse
 import os
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,11 +26,9 @@ def find_stream_by_name(streams: List[dict], name: str) -> Optional[dict]:
 
 
 def extract_time_series(stream: dict, channel: int = 0) -> Tuple[np.ndarray, np.ndarray]:
-    """Returns (t, x). If multi-channel, selects `channel`."""
     t = np.asarray(stream["time_stamps"], dtype=float)
     x = np.asarray(stream["time_series"])
     if x.ndim == 2:
-        # x shape: (samples, channels)
         if channel >= x.shape[1]:
             raise ValueError(f"Channel {channel} out of range for stream with {x.shape[1]} channels.")
         x = x[:, channel]
@@ -40,11 +38,6 @@ def extract_time_series(stream: dict, channel: int = 0) -> Tuple[np.ndarray, np.
 
 
 def find_marker_stream(streams: List[dict]) -> Optional[dict]:
-    """
-    Try to locate a marker stream.
-    Many setups store markers as type 'Markers' or similar.
-    We'll search for type containing 'marker' OR name containing 'marker'.
-    """
     for s in streams:
         name = str(s["info"]["name"][0]).lower()
         stype = str(s["info"]["type"][0]).lower()
@@ -53,9 +46,22 @@ def find_marker_stream(streams: List[dict]) -> Optional[dict]:
     return None
 
 
+def normalize_marker_label(label: str) -> str:
+    lab = str(label).strip().lower()
+    lab = re.sub(r"\s+", " ", lab)          
+    lab = lab.replace(" ", "_")             
+    return lab
+
+
+def sanitize_filename(s: str) -> str:
+    s = s.strip().lower()
+    s = re.sub(r"\s+", "_", s)
+    s = re.sub(r"[^a-z0-9_\-]+", "", s)
+    return s
+
+
 def extract_markers(marker_stream: dict) -> Tuple[np.ndarray, List[str]]:
     mt = np.asarray(marker_stream["time_stamps"], dtype=float)
-    # time_series is typically list of lists like [[label],[label],...]
     raw = marker_stream["time_series"]
     labels: List[str] = []
     for item in raw:
@@ -63,6 +69,7 @@ def extract_markers(marker_stream: dict) -> Tuple[np.ndarray, List[str]]:
             labels.append(str(item[0]))
         else:
             labels.append(str(item))
+    labels = [normalize_marker_label(lab) for lab in labels]
     return mt, labels
 
 
@@ -72,7 +79,6 @@ def add_marker_lines(ax, marker_times: Optional[np.ndarray], marker_labels: Opti
     ymin, ymax = ax.get_ylim()
     for t, lab in zip(marker_times, marker_labels):
         ax.axvline(t, alpha=0.25)
-        # Put small text near top
         ax.text(t, ymax, lab, rotation=90, va="top", fontsize=7)
 
 
@@ -109,11 +115,48 @@ def plot_signal(
     plt.close(fig)
 
 
+def plot_ppg_all_channels_stacked(
+    ppg_stream: dict,
+    title: str,
+    outpath: Optional[str],
+    marker_times: Optional[np.ndarray],
+    marker_labels: Optional[List[str]],
+    show: bool,
+    zoom: Optional[Tuple[float, float]] = None,
+) -> None:
+    data = np.asarray(ppg_stream["time_series"])
+    t = np.asarray(ppg_stream["time_stamps"], dtype=float)
+
+    if data.ndim != 2 or data.shape[1] != 3:
+        raise ValueError(f"Expected PPG stream with shape (N,3). Got {data.shape}.")
+
+    fig, axes = plt.subplots(3, 1, figsize=(14, 7), sharex=True)
+
+    for ch in range(3):
+        axes[ch].plot(t, data[:, ch])
+        axes[ch].set_ylabel(f"PPG_{ch+1}")
+
+        if zoom is not None:
+            axes[ch].set_xlim(zoom[0], zoom[1])
+
+        add_marker_lines(axes[ch], marker_times, marker_labels)
+
+    axes[-1].set_xlabel("Time (s)")
+    fig.suptitle(title)
+    fig.tight_layout()
+
+    if outpath:
+        os.makedirs(os.path.dirname(outpath), exist_ok=True)
+        fig.savefig(outpath, dpi=150)
+        print(f"Saved: {outpath}")
+
+    if show:
+        plt.show()
+
+    plt.close(fig)
+
+
 def get_emotibit_indices(streams: List[dict]) -> List[int]:
-    """
-    From stream names like PPG_EmotiBit_1, EDA_EmotiBit_2, etc.,
-    collect all indices.
-    """
     idxs = set()
     pattern = re.compile(r"(PPG|EDA|TEMP)_EmotiBit_(\d+)$")
     for s in streams:
@@ -124,14 +167,38 @@ def get_emotibit_indices(streams: List[dict]) -> List[int]:
     return sorted(list(idxs))
 
 
+def marker_zoom_windows(
+    marker_times: np.ndarray,
+    marker_labels: List[str],
+    pad_seconds: float,
+) -> List[Tuple[str, Tuple[float, float]]]:
+    windows = []
+    for t, lab in zip(marker_times, marker_labels):
+        z0 = float(t - pad_seconds)
+        z1 = float(t + pad_seconds)
+        windows.append((lab, (z0, z1)))
+    return windows
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--xdf", required=True, help="Path to .xdf file")
     parser.add_argument("--out", default="analysis_outputs/visual_inspection", help="Folder to save plots")
     parser.add_argument("--show", action="store_true", help="Show plots interactively")
-    parser.add_argument("--ppg_channel", type=int, default=0, help="Which PPG channel to plot (0/1/2)")
-    parser.add_argument("--zoom_seconds", type=float, default=60.0, help="Zoom window length (seconds)")
-    parser.add_argument("--zoom_start_offset", type=float, default=300.0, help="Zoom start offset from recording start (seconds)")
+
+    # PPG options
+    parser.add_argument("--ppg_channel", type=int, default=0, help="PPG channel to plot when NOT using --ppg_all_channels (0/1/2)")
+    parser.add_argument("--ppg_all_channels", action="store_true", help="Plot all 3 PPG channels stacked (QC)")
+
+    # Fixed-offset zoom (optional)
+    parser.add_argument("--fixed_zoom", action="store_true", help="Also save the old fixed-offset zoom plot")
+    parser.add_argument("--zoom_seconds", type=float, default=60.0, help="Fixed zoom window length (seconds)")
+    parser.add_argument("--zoom_start_offset", type=float, default=300.0, help="Fixed zoom start offset from recording start (seconds)")
+
+    # Marker-based zoom (QC)
+    parser.add_argument("--zoom_by_markers", action="store_true", help="Create zoom plots around each marker time")
+    parser.add_argument("--marker_pad", type=float, default=15.0, help="Seconds before/after marker for zoom window")
+
     args = parser.parse_args()
 
     streams, header = pyxdf.load_xdf(args.xdf)
@@ -146,11 +213,10 @@ def main():
     if marker_stream:
         marker_times, marker_labels = extract_markers(marker_stream)
         print(f"\nMarker stream found: {marker_stream['info']['name'][0]} ({marker_stream['info']['type'][0]})")
-        print("First markers:", list(zip(marker_times[:10], marker_labels[:10])))
+        print("Markers:", list(zip(marker_times, marker_labels)))
     else:
-        print("\nNo marker stream found automatically. (That’s OK; we can add it once you tell me the stream name.)")
+        print("\nNo marker stream found automatically.")
 
-    # Which EmotiBits exist?
     idxs = get_emotibit_indices(streams)
     if not idxs:
         print("\nNo EmotiBit_* streams found with expected names. Check stream list output above.")
@@ -158,7 +224,11 @@ def main():
 
     print(f"\nDetected EmotiBits: {idxs}")
 
-    # For each EmotiBit: plot full and zoomed for PPG, EDA, TEMP
+    # Precompute marker zoom windows
+    mz = []
+    if args.zoom_by_markers and marker_times is not None and marker_labels is not None:
+        mz = marker_zoom_windows(marker_times, marker_labels, args.marker_pad)
+
     for i in idxs:
         ppg_name = f"PPG_EmotiBit_{i}"
         eda_name = f"EDA_EmotiBit_{i}"
@@ -167,27 +237,84 @@ def main():
         # --- PPG ---
         ppg = find_stream_by_name(streams, ppg_name)
         if ppg:
-            t, x = extract_time_series(ppg, channel=args.ppg_channel)
-            title = f"{ppg_name} (ch {args.ppg_channel}) - FULL"
-            plot_signal(
-                t, x, title,
-                outpath=os.path.join(args.out, f"{ppg_name}_ch{args.ppg_channel}_full.png"),
-                marker_times=marker_times, marker_labels=marker_labels,
-                show=args.show
-            )
+            t_ppg = np.asarray(ppg["time_stamps"], dtype=float)
+            t0 = t_ppg[0]
 
-            # zoom
-            t0 = t[0]
-            z0 = t0 + args.zoom_start_offset
-            z1 = z0 + args.zoom_seconds
-            title = f"{ppg_name} (ch {args.ppg_channel}) - ZOOM {args.zoom_seconds:.0f}s @ +{args.zoom_start_offset:.0f}s"
-            plot_signal(
-                t, x, title,
-                outpath=os.path.join(args.out, f"{ppg_name}_ch{args.ppg_channel}_zoom.png"),
-                marker_times=marker_times, marker_labels=marker_labels,
-                show=args.show,
-                zoom=(z0, z1)
-            )
+            # FULL plot
+            if args.ppg_all_channels:
+                plot_ppg_all_channels_stacked(
+                    ppg,
+                    title=f"{ppg_name} - ALL CHANNELS (FULL)",
+                    outpath=os.path.join(args.out, f"{ppg_name}_allch_full.png"),
+                    marker_times=marker_times,
+                    marker_labels=marker_labels,
+                    show=args.show,
+                    zoom=None,
+                )
+            else:
+                t, x = extract_time_series(ppg, channel=args.ppg_channel)
+                plot_signal(
+                    t, x,
+                    title=f"{ppg_name} (ch {args.ppg_channel}) - FULL",
+                    outpath=os.path.join(args.out, f"{ppg_name}_ch{args.ppg_channel}_full.png"),
+                    marker_times=marker_times,
+                    marker_labels=marker_labels,
+                    show=args.show,
+                )
+
+            # Fixed-offset zoom (optional)
+            if args.fixed_zoom:
+                z0 = t0 + args.zoom_start_offset
+                z1 = z0 + args.zoom_seconds
+                zoom = (float(z0), float(z1))
+
+                if args.ppg_all_channels:
+                    plot_ppg_all_channels_stacked(
+                        ppg,
+                        title=f"{ppg_name} - ALL CHANNELS (FIXED ZOOM {args.zoom_seconds:.0f}s @ +{args.zoom_start_offset:.0f}s)",
+                        outpath=os.path.join(args.out, f"{ppg_name}_allch_fixedzoom.png"),
+                        marker_times=marker_times,
+                        marker_labels=marker_labels,
+                        show=args.show,
+                        zoom=zoom,
+                    )
+                else:
+                    t, x = extract_time_series(ppg, channel=args.ppg_channel)
+                    plot_signal(
+                        t, x,
+                        title=f"{ppg_name} (ch {args.ppg_channel}) - FIXED ZOOM {args.zoom_seconds:.0f}s @ +{args.zoom_start_offset:.0f}s",
+                        outpath=os.path.join(args.out, f"{ppg_name}_ch{args.ppg_channel}_fixedzoom.png"),
+                        marker_times=marker_times,
+                        marker_labels=marker_labels,
+                        show=args.show,
+                        zoom=zoom,
+                    )
+
+            # Marker-based zoom plots (recommended for channel choice)
+            for lab, zoom in mz:
+                lab_fn = sanitize_filename(lab)
+
+                if args.ppg_all_channels:
+                    plot_ppg_all_channels_stacked(
+                        ppg,
+                        title=f"{ppg_name} - ALL CHANNELS (ZOOM around {lab}, ±{args.marker_pad:.0f}s)",
+                        outpath=os.path.join(args.out, f"{ppg_name}_allch_zoom_{lab_fn}.png"),
+                        marker_times=marker_times,
+                        marker_labels=marker_labels,
+                        show=args.show,
+                        zoom=zoom,
+                    )
+                else:
+                    t, x = extract_time_series(ppg, channel=args.ppg_channel)
+                    plot_signal(
+                        t, x,
+                        title=f"{ppg_name} (ch {args.ppg_channel}) - ZOOM around {lab}, ±{args.marker_pad:.0f}s",
+                        outpath=os.path.join(args.out, f"{ppg_name}_ch{args.ppg_channel}_zoom_{lab_fn}.png"),
+                        marker_times=marker_times,
+                        marker_labels=marker_labels,
+                        show=args.show,
+                        zoom=zoom,
+                    )
         else:
             print(f"Missing: {ppg_name}")
 
@@ -195,12 +322,13 @@ def main():
         eda = find_stream_by_name(streams, eda_name)
         if eda:
             t, x = extract_time_series(eda, channel=0)
-            title = f"{eda_name} - FULL"
             plot_signal(
-                t, x, title,
+                t, x,
+                title=f"{eda_name} - FULL",
                 outpath=os.path.join(args.out, f"{eda_name}_full.png"),
-                marker_times=marker_times, marker_labels=marker_labels,
-                show=args.show
+                marker_times=marker_times,
+                marker_labels=marker_labels,
+                show=args.show,
             )
         else:
             print(f"Missing: {eda_name}")
@@ -209,12 +337,13 @@ def main():
         tmp = find_stream_by_name(streams, tmp_name)
         if tmp:
             t, x = extract_time_series(tmp, channel=0)
-            title = f"{tmp_name} - FULL"
             plot_signal(
-                t, x, title,
+                t, x,
+                title=f"{tmp_name} - FULL",
                 outpath=os.path.join(args.out, f"{tmp_name}_full.png"),
-                marker_times=marker_times, marker_labels=marker_labels,
-                show=args.show
+                marker_times=marker_times,
+                marker_labels=marker_labels,
+                show=args.show,
             )
         else:
             print(f"Missing: {tmp_name}")
@@ -226,3 +355,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+run:
+python3 analysis/01_visual_inspection.py \
+  --xdf data/raw/session_01.xdf \
+  --ppg_all_channels
+"""
