@@ -1,0 +1,20 @@
+{
+  "segment": "baseline_warmup",
+  "status": "ok",
+  "n_subjects": 7,
+  "n_seconds": 138,
+  "t_start_sec": 62864,
+  "t_end_sec": 63001,
+  "mean_pairwise_r_zero_lag": -0.07441484144256366,
+  "leave_one_out_isc": -0.15711391880228626,
+  "mean_pairwise_best_r_maxlag": NaN,
+  "mean_abs_lag_s_at_best_r": NaN,
+  "max_lag_s": 0,
+  "files": {
+    "aligned_matrix": "analysis_outputs/synchrony/baseline_warmup/aligned_HR_matrix.csv",
+    "pairwise_corr_zero_lag": "analysis_outputs/synchrony/baseline_warmup/pairwise_corr.csv",
+    "heatmap_zero_lag_png": "analysis_outputs/synchrony/baseline_warmup/pairwise_corr_heatmap.png",
+    "windowed_sync_csv": "analysis_outputs/synchrony/baseline_warmup/synchrony_timeseries.csv",
+    "windowed_sync_png": "analysis_outputs/synchrony/baseline_warmup/synchrony_timeseries.png"
+  }
+}

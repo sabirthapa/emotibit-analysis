@@ -1,0 +1,7 @@
+1. Pre-meditation HR synchrony was absent at both the whole-group and subgroup levels.
+2. Main meditation showed a small but significant whole-group synchrony increase above null.
+3. The strongest effect was a subgroup consisting of EmotiBit 4, 6, and 7.
+4. This subgroup showed moderate positive HR synchrony during meditation (r≈0.21).
+5. The subgroup main-vs-pre increase was strongly significant under circular-shift surrogate testing.
+6. Recovery did not show positive synchrony, suggesting the effect was meditation-specific.
+7. Sliding-window analysis showed transient bursts of subgroup synchrony rather than steady coupling.

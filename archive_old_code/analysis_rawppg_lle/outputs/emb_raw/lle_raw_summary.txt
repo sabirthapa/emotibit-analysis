@@ -1,0 +1,9 @@
+X_npy: analysis_rawppg_lle/outputs/rawppg_windows_X.npy
+meta_csv: analysis_rawppg_lle/outputs/rawppg_windows_meta.csv
+n_windows: 6739
+window_dim: 1000
+lle_neighbors: 25
+lle_method: modified
+n_components: 2
+trustworthiness(k=15): 0.7701
+segments: med_1, med_2, pre

@@ -1,0 +1,15 @@
+{
+  "baseline_segment": "baseline_warmup",
+  "med_segments_combined": "meditation_all",
+  "min_subjects": 5,
+  "min_points": 30,
+  "n_perm": 2000,
+  "seed": 0,
+  "n_subjects_used": 7,
+  "alpha": 0.05,
+  "n_sig_uncorrected_p": 6,
+  "n_sig_fdr_q": 4,
+  "files": {
+    "csv": "analysis_sync/outputs_subject_isc/isc_subject_level_results.csv"
+  }
+}

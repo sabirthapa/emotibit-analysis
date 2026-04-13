@@ -1,0 +1,10 @@
+in_csv: analysis_rawppg_lle/outputs/psd_features/rawppg_psd_features_withinSubjectZ.csv
+n_rows: 6739
+n_features: 72
+scale: False
+lle_neighbors: 25
+lle_method: modified
+trustworthiness(k=15): 0.8106
+segments: med_1, med_2, pre
+saved_embedding: analysis_rawppg_lle/outputs/emb_psd_lle_withinSubjectZ/embedding_lle_psd.csv
+saved_plots: lle_psd_scatter_by_segment.png, lle_psd_trajectories.png

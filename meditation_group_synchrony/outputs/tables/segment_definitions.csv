@@ -1,0 +1,4 @@
+segment,start_marker,end_marker,start_time,end_time,duration_sec,valid
+pre_meditation,baseline,longer version meditation,62858.874886791855,63102.98503968844,244.11015289658826,True
+main_meditation,longer version meditation,eyes open,63102.98503968844,63856.4550280819,753.4699883934591,True
+recovery,eyes open,stop,63856.4550280819,63951.232376392065,94.77734831016278,True

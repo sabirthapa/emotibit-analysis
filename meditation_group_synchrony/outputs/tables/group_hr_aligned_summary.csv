@@ -1,0 +1,4 @@
+segment,n_subjects_available,n_timepoints,time_start_sec,time_end_sec,output_csv
+pre_meditation,6,242,1.4297016131531564,242.42970161315316,group_hr_pre_meditation_aligned_1s.csv
+main_meditation,6,752,1.694946547948348,752.6949465479482,group_hr_main_meditation_aligned_1s.csv
+recovery,6,93,1.5779519822390284,93.57795198223903,group_hr_recovery_aligned_1s.csv

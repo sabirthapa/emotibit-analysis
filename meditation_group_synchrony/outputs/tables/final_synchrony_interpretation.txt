@@ -1,0 +1,22 @@
+Final interpretation
+
+Pre-meditation showed no evidence of HR synchrony at either the whole-group or subgroup level.
+Whole-group synchrony was -0.001 (p=0.501),
+and cluster 4-6-7 synchrony was -0.025 (p=0.710).
+
+During main meditation, whole-group synchrony increased slightly above the circular-shift null
+(r=0.047, p=0.008),
+but the clearest effect was a subgroup pattern in EmotiBit 4, 6, and 7
+(r=0.212, p=0.001).
+
+The meditation-specific increase from pre to main was modest for the whole group
+(diff=0.048, p=0.033),
+but strong for the 4-6-7 subgroup
+(diff=0.238, p=0.001).
+
+Recovery did not show positive synchrony. Whole-group synchrony returned near zero
+(r=0.011, p=0.365),
+while the 4-6-7 subgroup shifted negative
+(r=-0.160, p=0.978 for positive-tail testing).
+
+Overall, the data support weak whole-group coupling but a clearer, meditation-specific and transient subgroup synchrony effect in participants 4, 6, and 7.

@@ -1,0 +1,10 @@
+X_npy: archive_old_code/analysis_rawppg_lle/outputs/rawppg_windows_X.npy
+meta_csv: archive_old_code/analysis_rawppg_lle/outputs/rawppg_windows_meta.csv
+n_windows: 6739
+window_dim: 1000
+fs_nominal: 100.0
+welch: nperseg=256, noverlap=128, window=hann
+band: 0.5–8.0 Hz
+bins: 64
+features: psd_total_power_0p5_8, psd_peak_freq_0p5_8, psd_bp_0p5_1, psd_bp_1_2, psd_bp_2_4, psd_bp_4_8, psd_centroid_0p5_8, psd_entropy_0p5_8, psd_bin_00..
+saved_csv: archive_old_code/analysis_rawppg_lle/outputs/psd_features/rawppg_psd_features.csv
